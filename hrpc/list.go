@@ -8,6 +8,35 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+type ListNamespaces struct {
+	base
+}
+
+func NewListNamespaces(ctx context.Context) *ListNamespaces {
+	tn := &ListNamespaces{
+		base: base{
+			ctx:      ctx,
+			resultch: make(chan RPCResult, 1),
+		},
+	}
+	return tn
+}
+func (l ListNamespaces) Name() string {
+	return "ListNamespaceDescriptors"
+}
+
+func (l ListNamespaces) ToProto() proto.Message {
+	return &pb.ListNamespaceDescriptorsRequest{}
+}
+
+func (l ListNamespaces) NewResponse() proto.Message {
+	return &pb.ListNamespaceDescriptorsResponse{}
+}
+
+func (l ListNamespaces) Description() string {
+	return l.Name()
+}
+
 // ListTableNames models a ListTableNames pb call
 type ListTableNames struct {
 	base

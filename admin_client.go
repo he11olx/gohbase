@@ -35,6 +35,7 @@ type AdminClient interface {
 	ListSnapshots(t *hrpc.ListSnapshots) ([]*pb.SnapshotDescription, error)
 	RestoreSnapshot(t *hrpc.Snapshot) error
 	ClusterStatus() (*pb.ClusterStatus, error)
+	ListNamespaces(ctx context.Context) ([]*pb.NamespaceDescriptor, error)
 	ListTableNames(t *hrpc.ListTableNames) ([]*pb.TableName, error)
 	GetTableDescriptor(t *hrpc.GetTableDescriptor) (*pb.TableSchema, error)
 	// SetBalancer sets balancer state and returns previous state
@@ -257,6 +258,20 @@ func (c *client) RestoreSnapshot(t *hrpc.Snapshot) error {
 		return errors.New("sendPRC returned not a RestoreSnapshotResponse")
 	}
 	return nil
+}
+
+func (c *client) ListNamespaces(ctx context.Context) ([]*pb.NamespaceDescriptor, error) {
+	pbmsg, err := c.SendRPC(hrpc.NewListNamespaces(ctx))
+	if err != nil {
+		return nil, err
+	}
+
+	res, ok := pbmsg.(*pb.ListNamespaceDescriptorsResponse)
+	if !ok {
+		return nil, errors.New("sendPRC returned not a ListNamespaceDescriptorsResponse")
+	}
+
+	return res.NamespaceDescriptor, nil
 }
 
 func (c *client) ListTableNames(t *hrpc.ListTableNames) ([]*pb.TableName, error) {
